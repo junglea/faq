@@ -78,7 +78,7 @@ Exemple of create:
 $ curl -H "Content-Type: application/json" -X POST -d '{
     "question": "Does Spring Boot support Spring Framework 5?",
     "answer": "Yes, the Spring Boot 2.x line is built on Spring Framework 5.",
-    "tags": ["Spring Boot", "Spring framework 5"]
+    "tags": ["Spring Boot", "Spring framework 5"
 }' http://localhost:8080/api/faqs
 </pre>
 
@@ -97,4 +97,16 @@ $ curl -X DELETE http://localhost:8080/api/faqs/5af04025791e3d38dfca6797
 </pre>
 
 
-<pre>$ </pre>
+## Internal note
+
+Do not forget:
+
+* integration tests on each part of API
+    - Success cases
+    - Error cases
+* Logs with level
+* Catch exception and hide technical details
+* API Documentation (mandatory, type, description)
+* Technical Documentation (How to build, run, launch tests)
+* Protect datas
+* Add a version
