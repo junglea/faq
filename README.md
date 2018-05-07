@@ -54,9 +54,14 @@ Or use tomcat and war:
 
 ### 3. Launch requests
 
-Exemple of list:
+Exemple of get all:
 <pre>
-$ curl http://localhost:8080/api/faqs
+$ curl -G http://localhost:8080/api/faqs
+</pre>
+
+Exemple of search:
+<pre>
+$ curl -G -d 'question=java' http://localhost:8080/api/faqs
 </pre>
 
 Exemple of create:
@@ -88,9 +93,8 @@ $ curl -H "Content-Type: application/json" -X POST -d '{
 
 Exemple of remove:
 <pre>
-$ curl -H "Content-Type: application/json" -X DELETE http://localhost:8080/api/faqs/5af04025791e3d38dfca6797
+$ curl -X DELETE http://localhost:8080/api/faqs/5af04025791e3d38dfca6797
 </pre>
 
 
-<pre>$ </pre>
 <pre>$ </pre>

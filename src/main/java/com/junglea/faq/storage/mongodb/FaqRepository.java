@@ -15,4 +15,14 @@ import java.util.List;
 @Repository
 public interface FaqRepository extends MongoRepository<Faq, String> {
 
+    /**
+     * Search FAQ with terms
+     *
+     * @param question optional term to search in question field
+     * @param answer optional term to search in response field
+     * @return
+     */
+    @Query(value = "{ 'question': {$regex : ?0, $options: 'i'}, 'answer': {$regex : ?1, $options: 'i'} }")
+    List<Faq> findBy(String question, String answer);
+
 }
