@@ -1,9 +1,10 @@
 package com.junglea.faq.controller;
 
+import com.junglea.faq.model.ApiUser;
 import com.junglea.faq.model.Faq;
+import com.junglea.faq.authorization.FaqAuthority;
 import com.junglea.faq.storage.mongodb.FaqRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +12,9 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
 
 /**
  * Define FAQ API
@@ -41,9 +44,13 @@ public class FaqController {
      */
     @GetMapping("/faqs")
     public List<Faq> getFaqs(
+            @RequestHeader("X-Authorization") String sessionId,
             @RequestParam(value = "question", required = false, defaultValue = "") String question,
             @RequestParam(value = "answer", required = false, defaultValue = "") String answer){
-        return faqRepository.findBy(question, answer);
+        if (FaqAuthority.isAuthorizated(FaqAuthority.RequestType.SEARCH, sessionId)) {
+            return faqRepository.findBy(question, answer);
+        }
+        return null;
     }
 
     /**
@@ -52,9 +59,14 @@ public class FaqController {
      * @return Faq object
      */
     @PostMapping("/faqs")
-    public Faq createFaq(@Valid @RequestBody Faq faq) {
-        // TODO check of unicity and validity
-        return faqRepository.save(faq);
+    public Faq createFaq(
+            @RequestHeader("X-Authorization") String sessionId,
+            @Valid @RequestBody Faq faq) {
+        if (FaqAuthority.isAuthorizated(FaqAuthority.RequestType.CREATE, sessionId)) {
+            // TODO check of unicity and validity
+            return faqRepository.save(faq);
+        }
+        return null;
     }
 
     /**
@@ -62,8 +74,12 @@ public class FaqController {
      *
      */
     @DeleteMapping(value = "/faqs/{id}")
-    public void deleteFaq(@PathVariable("id") String id) {
-        faqRepository.deleteById(id);
+    public void deleteFaq(
+            @RequestHeader("X-Authorization") String sessionId,
+            @PathVariable("id") String id) {
+        if (FaqAuthority.isAuthorizated(FaqAuthority.RequestType.CREATE, sessionId)) {
+            faqRepository.deleteById(id);
+        }
     }
 
     /**
@@ -72,13 +88,18 @@ public class FaqController {
      * @return
      */
     @GetMapping(value = "/faqs/{id}")
-    public ResponseEntity<Faq> getFaqById(@PathVariable("id") String id) {
-        Optional<Faq> faq = faqRepository.findById(id);
-        if (faq == null || !faq.isPresent()) {
-            return new ResponseEntity<>(NOT_FOUND);
-        } else {
-            return new ResponseEntity<Faq>(faq.get(), OK);
+    public ResponseEntity<Faq> getFaqById(
+            @RequestHeader("X-Authorization") String sessionId,
+            @PathVariable("id") String id) {
+        if (FaqAuthority.isAuthorizated(FaqAuthority.RequestType.CREATE, sessionId)) {
+            Optional<Faq> faq = faqRepository.findById(id);
+            if (faq == null || !faq.isPresent()) {
+                return new ResponseEntity<>(NOT_FOUND);
+            } else {
+                return new ResponseEntity<Faq>(faq.get(), OK);
+            }
         }
+        return new ResponseEntity<>(FORBIDDEN);
     }
 
 }

@@ -54,6 +54,31 @@ Or use tomcat and war:
 
 ### 3. Launch requests
 
+#### 3.1 Users and authentication
+
+Create a user:
+<pre>
+$ curl -H "Content-Type: application/json" -X POST -d '{
+         "login": "admin",
+         "password": "changeme",
+         "role": "ADMIN"
+     }' http://localhost:8080/api/users
+</pre>
+<pre>
+$ curl -H "Content-Type: application/json" -X POST -d '{
+         "login": "ljung",
+         "password": "changeme",
+         "role": "READER"
+     }' http://localhost:8080/api/users
+</pre>
+
+Authenticate user (return a __SESSIONID__ to inject in request):
+<pre>
+$ curl -G -d 'login=admin&password=changeme' http://localhost:8080/api/authenticate
+</pre>
+
+#### 3.2 FAQs
+
 Exemple of get all:
 <pre>
 $ curl -G http://localhost:8080/api/faqs
@@ -61,12 +86,12 @@ $ curl -G http://localhost:8080/api/faqs
 
 Exemple of search:
 <pre>
-$ curl -G -d 'question=java' http://localhost:8080/api/faqs
+$ curl -H "X-Authorization: __SESSIONID__" -G -d 'question=java' http://localhost:8080/api/faqs
 </pre>
 
 Exemple of create:
 <pre>
-$ curl -H "Content-Type: application/json" -X POST -d '{
+$ curl -H "X-Authorization: __SESSIONID__" -H "Content-Type: application/json" -X POST -d '{
       "question": "What is Spring Framework 5?",
       "answer": "Spring Framework 5 is a major version upgrade of the Spring Framework, several years in the making. It introduces a new non-blocking web framework called Spring WebFlux which uses Reactor to support the Reactive Streams API.",
       "tags": ["spring framework 5", "new", "API"]
@@ -75,7 +100,7 @@ $ curl -H "Content-Type: application/json" -X POST -d '{
 
 Exemple of create:
 <pre>
-$ curl -H "Content-Type: application/json" -X POST -d '{
+$ curl -H "X-Authorization: __SESSIONID__" -H "Content-Type: application/json" -X POST -d '{
     "question": "Does Spring Boot support Spring Framework 5?",
     "answer": "Yes, the Spring Boot 2.x line is built on Spring Framework 5.",
     "tags": ["Spring Boot", "Spring framework 5"
@@ -84,7 +109,7 @@ $ curl -H "Content-Type: application/json" -X POST -d '{
 
 Exemple of create:
 <pre>
-$ curl -H "Content-Type: application/json" -X POST -d '{
+$ curl -H "X-Authorization: __SESSIONID__" -H "Content-Type: application/json" -X POST -d '{
     "question": "Will Spring Framework 5 work with Java 6 or Java 7?",
     "answer": "No. Spring Framework 5 requires Java 8 or later. Please keep using Spring Framework 4.3 for Java 6/7 scenarios.",
     "tags": ["java", "Spring framework 5"]
@@ -93,7 +118,7 @@ $ curl -H "Content-Type: application/json" -X POST -d '{
 
 Exemple of remove:
 <pre>
-$ curl -X DELETE http://localhost:8080/api/faqs/5af04025791e3d38dfca6797
+$ curl -H "X-Authorization: __SESSIONID__" -X DELETE http://localhost:8080/api/faqs/5af04025791e3d38dfca6797
 </pre>
 
 
