@@ -43,11 +43,12 @@ public class FaqController {
      * @return List of FAQ
      */
     @GetMapping("/faqs")
-    public List<Faq> getFaqs(
+    public List<Faq> getFaqsBySearch(
             @RequestHeader("X-Authorization") String sessionId,
             @RequestParam(value = "question", required = false, defaultValue = "") String question,
             @RequestParam(value = "answer", required = false, defaultValue = "") String answer){
-        if (FaqAuthority.isAuthorizated(FaqAuthority.RequestType.SEARCH, sessionId)) {
+        // Access depend of user and if search is activate
+        if (FaqAuthority.isAuthorizated((question.isEmpty() && answer.isEmpty())?FaqAuthority.RequestType.LISTALL:FaqAuthority.RequestType.SEARCH, sessionId)) {
             return faqRepository.findBy(question, answer);
         }
         return null;
